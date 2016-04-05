@@ -23,6 +23,6 @@ public class MyActor extends Actor {
     public void draw (Batch batch, float parentAlpha) {
         Color color = getColor();
         batch.setColor(color.r, color.g, color.b, color.a * parentAlpha);
-        batch.draw(region,0,0);
+        batch.draw(region,1,4*16,16,16);
     }
 }

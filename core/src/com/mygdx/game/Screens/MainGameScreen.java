@@ -48,6 +48,7 @@ public class MainGameScreen extends BaseScreen {
         stage=new Stage(new ExtendViewport(800, 480));
 
         MyActor actor=new MyActor();
+        //actor.setSize(16f,16f);
         stage.addActor(actor);
 
         renderer.getBatch();
@@ -65,14 +66,17 @@ public class MainGameScreen extends BaseScreen {
     public void render(float delta) {
         Gdx.gl20.glClearColor(0, 0, 0.5f, 1);
         Gdx.gl20.glClear(GL20.GL_COLOR_BUFFER_BIT);
-        stage.act();
-        stage.draw();
+
         //se renderiza el mapa
         camera.update();
         renderer.setView(camera);
         renderer.render();
 
-        /*stage.act();
-        stage.draw();*/
+        stage.act();
+       /* stage.getBatch().begin();*/
+        //stage.getBatch().disableBlending();
+        stage.draw();
+        //stage.getBatch().enableBlending();
+        /*stage.getBatch().end();*/
     }
 }
