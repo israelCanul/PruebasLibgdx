@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<map version="1.0" orientation="orthogonal" renderorder="right-down" width="50" height="30" tilewidth="16" tileheight="16" backgroundcolor="#00aaff" nextobjectid="1">
+ <tileset firstgid="1" name="medium" tilewidth="16" tileheight="16" tilecount="1024" columns="32">
+  <image source="medium.png" trans="ff00ff" width="512" height="512"/>
+ </tileset>
+ <layer name="fondo" width="50" height="30">
+  <data encoding="base64" compression="zlib">
+   eJzt0TkOwjAQhWGPq0BLw742wC2AkwEVx4BUHINwEqCBmoYdnhQaouA4NNaQGelrbEvx7yglIyPzy6wgSGHt5pqJs4FtCjs310wc1x1jUmpiMCUeHXPcc2Hgx3S0sNY26BCPjgHWhgYj6fgYD3IW8g469tg7WOrifM9C30GHp/GGlqTD3DGjEPeOJYW4dhzfuHcUdEg6stFxxfmbwZ14dFSgalDT0iEddh0nnDlHXIhfRxFKEeUU/+OBbzxjKM2ro461RoxmhjoC9R++vbFw4wV62gzP
+  </data>
+ </layer>
+ <layer name="objetos" width="50" height="30">
+  <data encoding="base64" compression="zlib">
+   eJxjYCANODIxMDhhwc5MJBo0wCAR6N4kIK5khNA1UDp5kPijmhGC0dnooBHo3iYsuHmQ+IPaYCYSPseIwMjiuNTjEkeWm00TV48CUkA0MO3GDNP0O1jApoF2AJFgLTAdrENKC7nAvJ6HVBZexVEuUgJmMjMwzIJiaoGzQD+cQ/JHNtDdOTj8Qa30v5OK7ocBdH+gA1rEx0CAoeCPWCLUDAV/EAOGgj9G44N+QB1YtmkQKN+GQny4A/3gQYVymlr+WMyEwEuwlPO42seDzR+HmRD4CAl16WDzB7mAVv5YCAzLRVRqm5cRoEGAGH8Q4yZ0fxwEqj9Exz4GMf4gxk1DwR/EAFr5g1CagtGj+RwVkOqPOVBaDRhn6kjxxs5IHm4H+qGDGVUMFwDJsQAxKxJmg+q5SoR+ZHfuweHmUTAKaAEA9gtNig==
+  </data>
+ </layer>
+</map>

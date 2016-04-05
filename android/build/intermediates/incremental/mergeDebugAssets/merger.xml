@@ -1,0 +1,2 @@
+<?xml version="1.0" encoding="utf-8"?>
+<merger version="3"><dataSet config="main"><source path="/Users/icanul/Documents/testGame/android/assets"><file name="badlogic.jpg" path="/Users/icanul/Documents/testGame/android/assets/badlogic.jpg"/><file name="mimundo.tmx" path="/Users/icanul/Documents/testGame/android/assets/mimundo.tmx"/><file name="medium.png" path="/Users/icanul/Documents/testGame/android/assets/medium.png"/></source></dataSet><dataSet config="debug"><source path="/Users/icanul/Documents/testGame/android/src/debug/assets"/></dataSet></merger>

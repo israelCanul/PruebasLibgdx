@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="utf-8"?>
+<items version="2" >
+
+    <item
+        jar="/Users/icanul/Documents/testGame/core/build/libs/core-1.0.jar"
+        jumboMode="false"
+        revision="23.0.2"
+        sha1="66454fa452558cafa0637f11e4898596fc05bf0d">
+        <dex dex="/Users/icanul/Documents/testGame/android/build/intermediates/pre-dexed/debug/core-1.0_da59d743707d030e11b51b746a4ab6dc213cd4e3.jar" />
+    </item>
+
+</items>
