@@ -10,7 +10,10 @@ import com.badlogic.gdx.maps.tiled.TiledMapTileLayer;
 import com.badlogic.gdx.maps.tiled.TmxMapLoader;
 import com.badlogic.gdx.maps.tiled.renderers.OrthogonalTiledMapRenderer;
 import com.badlogic.gdx.math.Vector2;
+import com.badlogic.gdx.physics.box2d.Body;
+import com.badlogic.gdx.physics.box2d.BodyDef;
 import com.badlogic.gdx.physics.box2d.Box2DDebugRenderer;
+import com.badlogic.gdx.physics.box2d.PolygonShape;
 import com.badlogic.gdx.physics.box2d.World;
 import com.badlogic.gdx.scenes.scene2d.Stage;
 import com.badlogic.gdx.utils.viewport.ExtendViewport;
@@ -32,6 +35,14 @@ public class MainGameScreen extends BaseScreen {
     OrthogonalTiledMapRenderer renderer;
     OrthographicCamera camera;
 
+
+    // variables del cuerpo en box2d
+    private BodyDef bodyDef;
+    private Body body;
+
+
+
+
     private TiledMapTileLayer suelo;
 
     public MainGameScreen(Game game) {
@@ -47,6 +58,9 @@ public class MainGameScreen extends BaseScreen {
         debugRenderer= new Box2DDebugRenderer();
 
 
+
+
+
         //se crea la camara de tile
         camera = new OrthographicCamera();
         camera.setToOrtho(false, 800 / unitScale, 480 / unitScale);
@@ -59,7 +73,39 @@ public class MainGameScreen extends BaseScreen {
         //se crea el stage de la pantalla dond evan a estar alojados todos los actores de la partida
         stage=new Stage(new ExtendViewport(800, 480));
 
-        MyActor actor=new MyActor();
+
+        createSuelo(0,0);
+        createSuelo(0,1);
+        createSuelo(0,2);
+        createSuelo(0,3);
+        createSuelo(0,4);
+        createSuelo(0,5);
+        createSuelo(0,6);
+        createSuelo(0,7);
+        createSuelo(0,8);
+        createSuelo(0,9);
+        createSuelo(0,10);
+        createSuelo(0,11);
+        createSuelo(0,12);
+        createSuelo(0,13);
+        createSuelo(0,14);
+        createSuelo(0,15);
+        createSuelo(0,16);
+        createSuelo(0,17);
+        createSuelo(0,18);
+        createSuelo(0,19);
+        createSuelo(0,20);
+        createSuelo(0,21);
+        createSuelo(0,22);
+        createSuelo(0,23);
+        createSuelo(0,24);
+        createSuelo(0,25);
+        createSuelo(0,26);
+        createSuelo(0,27);
+        createSuelo(0,28);
+        createSuelo(0,29);
+
+        MyActor actor=new MyActor(world);
         stage.addActor(actor);
 
         renderer.getBatch();
@@ -79,16 +125,44 @@ public class MainGameScreen extends BaseScreen {
         Gdx.gl20.glClear(GL20.GL_COLOR_BUFFER_BIT);
 
         world.step(1 / 60f, 6, 2);
-
-
-
-        camera.update();
-        renderer.setView(camera);
-        renderer.render();
-
         stage.act();
+
+        /*camera.update();
+        renderer.setView(camera);
+        renderer.render()*/;
+
+
+
         stage.draw();
 
         debugRenderer.render(world, camera.combined);
     }
+
+    public void createBox(){
+        bodyDef=new BodyDef();
+        bodyDef.type= BodyDef.BodyType.DynamicBody;
+        bodyDef.position.set(new Vector2(2, 6));
+        PolygonShape shape = new PolygonShape();
+        shape.setAsBox(0.5f,0.5f);
+        body=world.createBody(bodyDef);
+        body.createFixture(shape, 1f);
+        body.resetMassData();
+        shape.dispose();
+    }
+
+    public void createSuelo(float x,float y){
+
+        bodyDef=new BodyDef();
+        bodyDef.type= BodyDef.BodyType.StaticBody;
+        bodyDef.position.set(new Vector2((x+0.5f),(y+0.5f)));
+        PolygonShape shape = new PolygonShape();
+        shape.setAsBox(0.5f,0.5f);
+        body=world.createBody(bodyDef);
+        body.createFixture(shape,1f);
+        body.resetMassData();
+        shape.dispose();
+
+
+    }
+
 }
