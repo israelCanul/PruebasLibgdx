@@ -111,7 +111,7 @@
 </data>
  </layer>
  <objectgroup name="colicion">
-  <object id="4" x="-0.671642" y="432.333" width="801.005" height="48"/>
+  <object id="4" x="0" y="432" width="800" height="48"/>
   <object id="7" x="127.667" y="288.333" width="15.6667" height="15.3333"/>
  </objectgroup>
 </map>

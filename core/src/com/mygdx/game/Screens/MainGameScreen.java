@@ -4,19 +4,26 @@ import com.badlogic.gdx.Game;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.graphics.GL20;
 import com.badlogic.gdx.graphics.OrthographicCamera;
+import com.badlogic.gdx.maps.MapObject;
 import com.badlogic.gdx.maps.MapObjects;
+import com.badlogic.gdx.maps.objects.RectangleMapObject;
+import com.badlogic.gdx.maps.objects.TextureMapObject;
 import com.badlogic.gdx.maps.tiled.TiledMap;
 import com.badlogic.gdx.maps.tiled.TiledMapTileLayer;
 import com.badlogic.gdx.maps.tiled.TmxMapLoader;
 import com.badlogic.gdx.maps.tiled.renderers.OrthogonalTiledMapRenderer;
+
+import com.badlogic.gdx.math.Rectangle;
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.physics.box2d.Body;
 import com.badlogic.gdx.physics.box2d.BodyDef;
 import com.badlogic.gdx.physics.box2d.Box2DDebugRenderer;
 import com.badlogic.gdx.physics.box2d.PolygonShape;
+import com.badlogic.gdx.physics.box2d.Shape;
 import com.badlogic.gdx.physics.box2d.World;
 import com.badlogic.gdx.scenes.scene2d.Stage;
 import com.badlogic.gdx.utils.viewport.ExtendViewport;
+import com.badlogic.gdx.utils.viewport.FitViewport;
 import com.badlogic.gdx.utils.viewport.StretchViewport;
 import com.mygdx.game.Constants;
 import com.mygdx.game.Entitys.MyActor;
@@ -34,7 +41,7 @@ public class MainGameScreen extends BaseScreen {
     TiledMap map;
     OrthogonalTiledMapRenderer renderer;
     OrthographicCamera camera;
-
+    private MyActor actor;
 
     // variables del cuerpo en box2d
     private BodyDef bodyDef;
@@ -51,15 +58,34 @@ public class MainGameScreen extends BaseScreen {
         map = new TmxMapLoader().load("mimundo.tmx");
         suelo = (TiledMapTileLayer)map.getLayers().get("coliciones");
         MapObjects objects = map.getLayers().get("colicion").getObjects();
-        System.out.print(objects.getCount());
+        //System.out.print(objects.getCount());
+
+
+
+
+
+        stage=new Stage(new FitViewport(800, 480));
 
         // se crea el mundo de box2d
         world = new World(new Vector2(0, -10), true);
+
         debugRenderer= new Box2DDebugRenderer();
 
 
 
+        for (MapObject object:objects) {
+            if (object instanceof TextureMapObject) {
+                continue;
+            }
+            Shape shape;
 
+            if (object instanceof RectangleMapObject) {
+                RectangleMapObject rectangulo = (RectangleMapObject)object;
+                getRectangle(rectangulo);
+                System.out.println(rectangulo.getRectangle().getWidth());
+                System.out.println(rectangulo.getRectangle().getHeight());
+            }
+        }
 
         //se crea la camara de tile
         camera = new OrthographicCamera();
@@ -68,13 +94,20 @@ public class MainGameScreen extends BaseScreen {
 
     }
 
+    private void getRectangle(RectangleMapObject rectangleObject) {
+        Rectangle rectangle = rectangleObject.getRectangle();
+        //createBox(rectangle.x,rectangle.y,rectangle.width,rectangle.height);
+    }
+
+
+
     @Override
     public void show() {
         //se crea el stage de la pantalla dond evan a estar alojados todos los actores de la partida
-        stage=new Stage(new ExtendViewport(800, 480));
 
 
-        createSuelo(0,0);
+
+        /*createSuelo(0,0);
         createSuelo(0,1);
         createSuelo(0,2);
         createSuelo(0,3);
@@ -103,9 +136,10 @@ public class MainGameScreen extends BaseScreen {
         createSuelo(0,26);
         createSuelo(0,27);
         createSuelo(0,28);
-        createSuelo(0,29);
+        createSuelo(0,29);*/
+        createSuelo(0,2);
 
-        MyActor actor=new MyActor(world);
+        actor=new MyActor(world);
         stage.addActor(actor);
 
         renderer.getBatch();
@@ -114,7 +148,8 @@ public class MainGameScreen extends BaseScreen {
 
     @Override
     public void hide() {
-        stage.dispose();
+        stage.clear();
+        actor.detach();
         map.dispose();
         world.dispose();
     }
@@ -123,14 +158,13 @@ public class MainGameScreen extends BaseScreen {
     public void render(float delta) {
         Gdx.gl20.glClearColor(0, 0, 0.5f, 1);
         Gdx.gl20.glClear(GL20.GL_COLOR_BUFFER_BIT);
-
-        world.step(1 / 60f, 6, 2);
         stage.act();
+        world.step(1 / 60f, 6, 2);
 
-        /*camera.update();
+
+        camera.update();
         renderer.setView(camera);
-        renderer.render()*/;
-
+        renderer.render();
 
 
         stage.draw();
@@ -138,12 +172,12 @@ public class MainGameScreen extends BaseScreen {
         debugRenderer.render(world, camera.combined);
     }
 
-    public void createBox(){
+    public void createBox(float x,float y,float witdh,float height){
         bodyDef=new BodyDef();
-        bodyDef.type= BodyDef.BodyType.DynamicBody;
-        bodyDef.position.set(new Vector2(2, 6));
+        bodyDef.type= BodyDef.BodyType.StaticBody;
+        bodyDef.position.set(new Vector2((x+0.5f),(y+0.5f)));
         PolygonShape shape = new PolygonShape();
-        shape.setAsBox(0.5f,0.5f);
+        shape.setAsBox((witdh+0.5f),(height+0.5f));
         body=world.createBody(bodyDef);
         body.createFixture(shape, 1f);
         body.resetMassData();
@@ -156,9 +190,9 @@ public class MainGameScreen extends BaseScreen {
         bodyDef.type= BodyDef.BodyType.StaticBody;
         bodyDef.position.set(new Vector2((x+0.5f),(y+0.5f)));
         PolygonShape shape = new PolygonShape();
-        shape.setAsBox(0.5f,0.5f);
+        shape.setAsBox(50.5f, 0.5f);
         body=world.createBody(bodyDef);
-        body.createFixture(shape,1f);
+        body.createFixture(shape, 1f);
         body.resetMassData();
         shape.dispose();
 
