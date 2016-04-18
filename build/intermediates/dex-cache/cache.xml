@@ -2,11 +2,11 @@
 <items version="2" >
 
     <item
-        jar="/Users/icanul/Documents/testGame/core/build/libs/core-1.0.jar"
+        jar="/Users/icanul/Repositorios Android/PruebasLibgdx/core/build/libs/core-1.0.jar"
         jumboMode="false"
         revision="23.0.2"
-        sha1="66454fa452558cafa0637f11e4898596fc05bf0d">
-        <dex dex="/Users/icanul/Documents/testGame/android/build/intermediates/pre-dexed/debug/core-1.0_da59d743707d030e11b51b746a4ab6dc213cd4e3.jar" />
+        sha1="257e7e70027bc5e302a7c8f52ce99d34c7308e2f">
+        <dex dex="/Users/icanul/Repositorios Android/PruebasLibgdx/android/build/intermediates/pre-dexed/debug/core-1.0_afd62efb40ab425fd9c00ba7c40f5d1d70bc3376.jar" />
     </item>
 
 </items>

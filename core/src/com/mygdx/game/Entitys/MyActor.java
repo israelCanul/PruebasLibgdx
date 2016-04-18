@@ -71,7 +71,7 @@ public class MyActor extends Actor {
             // this speed has to be managed by the forces applied to the player. If we modify
             // Y speed, jumps can get very very weir.d
             float speedY = body.getLinearVelocity().y;
-            //body.setLinearVelocity(PLAYER_SPEED, speedY);
+            body.setLinearVelocity(PLAYER_SPEED, speedY);
         }
 
         if (jumping) {

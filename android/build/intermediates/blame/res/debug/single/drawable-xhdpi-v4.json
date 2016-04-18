@@ -1,5 +1,9 @@
 [
     {
+        "merged": "/Users/icanul/Repositorios Android/PruebasLibgdx/android/build/intermediates/res/merged/debug/drawable-xhdpi-v4/ic_launcher.png",
+        "source": "/Users/icanul/Repositorios Android/PruebasLibgdx/android/res/drawable-xhdpi/ic_launcher.png"
+    },
+    {
         "merged": "/Users/icanul/Documents/testGame/android/build/intermediates/res/merged/debug/drawable-xhdpi-v4/ic_launcher.png",
         "source": "/Users/icanul/Documents/testGame/android/res/drawable-xhdpi/ic_launcher.png"
     }

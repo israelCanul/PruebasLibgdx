@@ -22,11 +22,9 @@ import com.badlogic.gdx.physics.box2d.PolygonShape;
 import com.badlogic.gdx.physics.box2d.Shape;
 import com.badlogic.gdx.physics.box2d.World;
 import com.badlogic.gdx.scenes.scene2d.Stage;
-import com.badlogic.gdx.utils.viewport.ExtendViewport;
 import com.badlogic.gdx.utils.viewport.FitViewport;
-import com.badlogic.gdx.utils.viewport.StretchViewport;
-import com.mygdx.game.Constants;
 import com.mygdx.game.Entitys.MyActor;
+
 
 import static com.mygdx.game.Constants.unitScale;
 
@@ -82,8 +80,8 @@ public class MainGameScreen extends BaseScreen {
             if (object instanceof RectangleMapObject) {
                 RectangleMapObject rectangulo = (RectangleMapObject)object;
                 getRectangle(rectangulo);
-                System.out.println(rectangulo.getRectangle().getWidth());
-                System.out.println(rectangulo.getRectangle().getHeight());
+                /*System.out.println(rectangulo.getRectangle().getWidth());
+                System.out.println(rectangulo.getRectangle().getHeight());*/
             }
         }
 
@@ -96,8 +94,9 @@ public class MainGameScreen extends BaseScreen {
 
     private void getRectangle(RectangleMapObject rectangleObject) {
         Rectangle rectangle = rectangleObject.getRectangle();
-        //createBox(rectangle.x,rectangle.y,rectangle.width,rectangle.height);
+        createBox(rectangle.x,rectangle.y,rectangle.width,rectangle.height);
     }
+
 
 
 
@@ -137,7 +136,7 @@ public class MainGameScreen extends BaseScreen {
         createSuelo(0,27);
         createSuelo(0,28);
         createSuelo(0,29);*/
-        createSuelo(0,2);
+        //createSuelo(0,2);
 
         actor=new MyActor(world);
         stage.addActor(actor);
@@ -161,31 +160,38 @@ public class MainGameScreen extends BaseScreen {
         stage.act();
         world.step(1 / 60f, 6, 2);
 
-
         camera.update();
+
+
         renderer.setView(camera);
         renderer.render();
 
-
         stage.draw();
 
-        debugRenderer.render(world, camera.combined);
+        //debugRenderer.render(world, camera.combined);
     }
 
     public void createBox(float x,float y,float witdh,float height){
         bodyDef=new BodyDef();
         bodyDef.type= BodyDef.BodyType.StaticBody;
-        bodyDef.position.set(new Vector2((x+0.5f),(y+0.5f)));
+        bodyDef.position.set(new Vector2((  unitTileToBox2d(x)+ (unitTileToBox2d(witdh)/2)    /*+ 0.5f*/), (  unitTileToBox2d(y) + (unitTileToBox2d(height)/2)  /*+ 0.5f*/)));
         PolygonShape shape = new PolygonShape();
-        shape.setAsBox((witdh+0.5f),(height+0.5f));
+        shape.setAsBox(( unitTileToBox2d(witdh)/2 /*+ 0.5f*/), ( unitTileToBox2d(height)/2 /*+ 0.5f*/));
         body=world.createBody(bodyDef);
         body.createFixture(shape, 1f);
         body.resetMassData();
         shape.dispose();
     }
 
-    public void createSuelo(float x,float y){
+    private float unitTileToBox2d(float from){
+        float to=0;
+        to=from/unitScale;
+        System.out.println(to);
 
+        return to;
+    }
+
+    public void createSuelo(float x,float y){
         bodyDef=new BodyDef();
         bodyDef.type= BodyDef.BodyType.StaticBody;
         bodyDef.position.set(new Vector2((x+0.5f),(y+0.5f)));
@@ -195,8 +201,6 @@ public class MainGameScreen extends BaseScreen {
         body.createFixture(shape, 1f);
         body.resetMassData();
         shape.dispose();
-
-
     }
 
 }
