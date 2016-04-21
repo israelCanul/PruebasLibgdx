@@ -13,11 +13,16 @@ import com.badlogic.gdx.maps.tiled.TiledMapTileLayer;
 import com.badlogic.gdx.maps.tiled.TmxMapLoader;
 import com.badlogic.gdx.maps.tiled.renderers.OrthogonalTiledMapRenderer;
 
+import com.badlogic.gdx.math.MathUtils;
 import com.badlogic.gdx.math.Rectangle;
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.physics.box2d.Body;
 import com.badlogic.gdx.physics.box2d.BodyDef;
 import com.badlogic.gdx.physics.box2d.Box2DDebugRenderer;
+import com.badlogic.gdx.physics.box2d.Contact;
+import com.badlogic.gdx.physics.box2d.ContactImpulse;
+import com.badlogic.gdx.physics.box2d.ContactListener;
+import com.badlogic.gdx.physics.box2d.Manifold;
 import com.badlogic.gdx.physics.box2d.PolygonShape;
 import com.badlogic.gdx.physics.box2d.Shape;
 import com.badlogic.gdx.physics.box2d.World;
@@ -67,6 +72,9 @@ public class MainGameScreen extends BaseScreen {
         // se crea el mundo de box2d
         world = new World(new Vector2(0, -10), true);
 
+
+
+
         debugRenderer= new Box2DDebugRenderer();
 
 
@@ -96,6 +104,8 @@ public class MainGameScreen extends BaseScreen {
         Rectangle rectangle = rectangleObject.getRectangle();
         createBox(rectangle.x,rectangle.y,rectangle.width,rectangle.height);
     }
+
+
 
 
 
@@ -168,7 +178,7 @@ public class MainGameScreen extends BaseScreen {
 
         stage.draw();
 
-        //debugRenderer.render(world, camera.combined);
+        debugRenderer.render(world, camera.combined);
     }
 
     public void createBox(float x,float y,float witdh,float height){

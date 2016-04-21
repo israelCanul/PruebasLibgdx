@@ -1,22 +1,20 @@
 package com.mygdx.game.Entitys;
 
 import com.badlogic.gdx.Gdx;
-import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.Texture;
+import com.badlogic.gdx.graphics.g2d.Animation;
 import com.badlogic.gdx.graphics.g2d.Batch;
+import com.badlogic.gdx.graphics.g2d.TextureRegion;
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.physics.box2d.Body;
 import com.badlogic.gdx.physics.box2d.BodyDef;
-import com.badlogic.gdx.physics.box2d.CircleShape;
 import com.badlogic.gdx.physics.box2d.FixtureDef;
 import com.badlogic.gdx.physics.box2d.PolygonShape;
 import com.badlogic.gdx.physics.box2d.World;
 import com.badlogic.gdx.scenes.scene2d.Actor;
-import com.mygdx.game.Constants;
 
-import static com.mygdx.game.Constants.IMPULSE_JUMP;
-import static com.mygdx.game.Constants.PLAYER_SPEED;
-import static com.mygdx.game.Constants.unitScale;
+import static com.mygdx.game.Constants.*;
+
 /**
  * Created by icanul on 4/5/16.
  */
@@ -29,27 +27,51 @@ public class MyActor extends Actor {
     private boolean alive=true;
     private boolean jumping=false;
     private boolean mustJump=false;
+    //detalles del player
+    private float widthBox2d=1;//teniendo en cuenta que este valor es solo la mitad del ancho total
+    private float heightBox2d=1.5f;
+    private float initXBox2d=1;
+    private float initYBox2d=12;
+    private float density=0;
+    private float friction=0;
+    private float restitution=0.1f;
+
+    //informacion para animacion
+    protected Texture textureAnimacionWalk;
+    protected Texture textureAnimacionDown,textureAnimacionJump;
+    protected TextureRegion currentFrame;
+    protected TextureRegion[] walkFrames,downFrames,jumpFrames;
+    protected TextureRegion idleFrame;
+    private int status=9;
+    private Integer initAnimationState=WALK;
+    protected Animation walkAnimation, idleAnimation, currentAnimation,downAnimation,jumpAnimation;
+    private float time;
+
 
 
     public MyActor (World world) {
         this.world=world;
-        region = new Texture("bolita.png");
         //se llama a la funcio n para genera el actor y su cuerpo en box2d
         createBodyBox2d();
         //se definen sus tamaños de acuerdo a las variables globales
-        setWidth(unitScale);
-        setHeight(unitScale);
+        setWidth(unitScale * 2);
+        setHeight(unitScale * 3);
+
+        // se inicializan las animaciones del actor
+        initAnimation();
     }
+
+
+
+
+
 
     @Override
     public void draw (Batch batch, float parentAlpha) {
-        //Color color = getColor();
-        //System.out.println("Ancho: " + getX() + " Alto: " + getY());
-
-        //setPosition(convertir((body.getPosition().x - 0.5f)), convertir((body.getPosition().y - 0.5f)));
-        setPosition(convertir((body.getPosition().x - 0.5f)),convertir((body.getPosition().y - 0.5f)));
-        batch.draw(region,getX(),getY(),getWidth(),getHeight());
+        setPosition(convertir((body.getPosition().x - widthBox2d)),convertir((body.getPosition().y - heightBox2d)));
+        batch.draw(currentFrame, getX(), getY(), getWidth(), getHeight());
     }
+
 
     public float convertir(Float valor){
         return unitScale * valor;
@@ -77,35 +99,44 @@ public class MyActor extends Actor {
         if (jumping) {
             body.applyForceToCenter(0, 0 * 1.15f, true);
         }
+        time+= Gdx.graphics.getDeltaTime();
+        currentFrame = currentAnimation.getKeyFrame(time, true);
     }
 
+
+
     public void detach(){
+
         world.destroyBody(body);
+        textureAnimacionDown.dispose();
+        textureAnimacionJump.dispose();
+        textureAnimacionWalk.dispose();
+
     }
 
     public void createBodyBox2d(){
         bodyDef=new BodyDef();
         bodyDef.type= BodyDef.BodyType.DynamicBody;
-        bodyDef.position.set(new Vector2(0.5f, 12.5f));
+        bodyDef.position.set(new Vector2(initXBox2d, initYBox2d));
         //figura cuadrada
         PolygonShape shape = new PolygonShape();
-        shape.setAsBox(0.5f, 0.5f);
+        shape.setAsBox(widthBox2d, heightBox2d);
         //figura circular
-        CircleShape formaCirculo = new CircleShape();
-        formaCirculo.setRadius(0.5f);
+        //CircleShape formaCirculo = new CircleShape();
+        //formaCirculo.setRadius(0.5f);
         //se asigna el cuerpo desde el mundo
         body=world.createBody(bodyDef);
         //
         defFixture = new FixtureDef();  // Definimos el fixture
-        defFixture.shape = formaCirculo;  // Le pasasamos la forma
-        defFixture.density = 1.0f;  // Le pasamos la densidad
-        defFixture.friction = 0.0f;  // Le pasamos la friccion
-        defFixture.restitution = 0.6f;  //Le agregamos la restitucion
+        defFixture.shape = shape;  // Le pasasamos la forma
+        defFixture.density = density;  // Le pasamos la densidad
+        defFixture.friction = friction;  // Le pasamos la friccion
+        defFixture.restitution = restitution;  //Le agregamos la restitucion
         //se crea el fixture desde el cuerpo
         body.createFixture(defFixture);
         body.resetMassData();
         //se libera la informacion del shape
-        formaCirculo.dispose();
+        //formaCirculo.dispose();
         shape.dispose();
 
     }
@@ -113,7 +144,7 @@ public class MyActor extends Actor {
     public void jump(){
         if(isAlive()){
             jumping=true;
-
+            setStatus(JUMP);
             Vector2 position=body.getPosition();
             body.applyLinearImpulse(0,IMPULSE_JUMP,position.x,position.y,true);
         }
@@ -136,5 +167,66 @@ public class MyActor extends Actor {
     public void setMustJump(boolean mustJump) {
         this.mustJump = mustJump;
     }
+
+
+    public void initAnimation(){
+        //inicializamos las variables de animacion
+        textureAnimacionWalk =new Texture("walk_evil.png");
+        textureAnimacionDown =new Texture("down_player.png");
+        textureAnimacionJump =new Texture("jump_player.png");
+
+        TextureRegion[][] tmpWalk = TextureRegion.split(textureAnimacionWalk, textureAnimacionWalk.getWidth() / FRAME_COLS, textureAnimacionWalk.getHeight() / FRAME_ROWS);
+        TextureRegion[][] tmpDown = TextureRegion.split(textureAnimacionDown, textureAnimacionDown.getWidth() / FRAME_COLS, textureAnimacionDown.getHeight() / FRAME_ROWS);
+        TextureRegion[][] tmpJump = TextureRegion.split(textureAnimacionJump, textureAnimacionJump.getWidth() / FRAME_COLS, textureAnimacionJump.getHeight() / FRAME_ROWS);
+
+        //quieto
+        idleFrame = tmpWalk[0][0];
+        //actor walk
+        walkFrames = new TextureRegion[FRAME_COLS];
+        for (int j = 0; j < FRAME_COLS; j++) {
+            walkFrames[j] = tmpWalk[0][j];
+        }
+        //actor down
+        downFrames = new TextureRegion[FRAME_COLS];
+        for (int j = 0; j < FRAME_COLS; j++) {
+            downFrames[j] = tmpDown[0][j];
+        }
+        //actor Jump
+        jumpFrames = new TextureRegion[FRAME_COLS];
+        for (int j = 0; j < FRAME_COLS; j++) {
+            jumpFrames[j] = tmpJump[0][j];
+        }
+
+
+
+        //inicializando las animaciones
+        idleAnimation = new Animation(0.4f, idleFrame);
+        walkAnimation = new Animation(0.4f, walkFrames);
+        downAnimation =new Animation(0.4f,downFrames);
+        jumpAnimation =new Animation(0.4f,jumpFrames);
+        //estableciando la animacion de inicio
+        setStatus(initAnimationState);
+    }
+
+    //estatus de las animaciones
+    //aqui se van anexando cada una de los estados y sus animaciones del actor
+    public void setStatus(Integer status){
+        if (this.status != status){
+            this.status = status;
+            switch(status){
+                case WALK:
+                    currentAnimation = walkAnimation;
+                    break;
+                case JUMP:
+                    currentAnimation = jumpAnimation;
+                    break;
+                default:
+                    currentAnimation = idleAnimation;
+                    break;
+            }
+        }
+    }
+
+
 
 }
