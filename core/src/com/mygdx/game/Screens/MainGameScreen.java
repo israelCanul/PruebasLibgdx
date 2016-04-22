@@ -28,7 +28,9 @@ import com.badlogic.gdx.physics.box2d.Shape;
 import com.badlogic.gdx.physics.box2d.World;
 import com.badlogic.gdx.scenes.scene2d.Stage;
 import com.badlogic.gdx.utils.viewport.FitViewport;
+import com.mygdx.game.Constants;
 import com.mygdx.game.Entitys.MyActor;
+import com.mygdx.game.Listeners.ContactListenerClass;
 
 
 import static com.mygdx.game.Constants.unitScale;
@@ -44,7 +46,7 @@ public class MainGameScreen extends BaseScreen {
     TiledMap map;
     OrthogonalTiledMapRenderer renderer;
     OrthographicCamera camera;
-    private MyActor actor;
+    public MyActor actor;
 
     // variables del cuerpo en box2d
     private BodyDef bodyDef;
@@ -84,25 +86,37 @@ public class MainGameScreen extends BaseScreen {
                 continue;
             }
             Shape shape;
+            MapObject temp=object;
+
+            boolean suelo = Boolean.valueOf(temp.getProperties().get("suelo").toString());
+            boolean bloque = Boolean.valueOf(temp.getProperties().get("bloque").toString());
 
             if (object instanceof RectangleMapObject) {
                 RectangleMapObject rectangulo = (RectangleMapObject)object;
-                getRectangle(rectangulo);
-                /*System.out.println(rectangulo.getRectangle().getWidth());
-                System.out.println(rectangulo.getRectangle().getHeight());*/
+
+
+                getRectangle(rectangulo,suelo,bloque);
+                System.out.println(suelo);
+
+                //System.out.println(rectangulo.getRectangle().getHeight());*/
             }
         }
+
+        world.setContactListener(new ContactListenerClass(this));
 
         //se crea la camara de tile
         camera = new OrthographicCamera();
         camera.setToOrtho(false, 800 / unitScale, 480 / unitScale);
         renderer = new OrthogonalTiledMapRenderer(map, 1 / unitScale );
 
+
+
+
     }
 
-    private void getRectangle(RectangleMapObject rectangleObject) {
+    private void getRectangle(RectangleMapObject rectangleObject, boolean suelo, boolean bloque) {
         Rectangle rectangle = rectangleObject.getRectangle();
-        createBox(rectangle.x,rectangle.y,rectangle.width,rectangle.height);
+        createBox(rectangle.x, rectangle.y, rectangle.width, rectangle.height, suelo, bloque);
     }
 
 
@@ -113,39 +127,6 @@ public class MainGameScreen extends BaseScreen {
     @Override
     public void show() {
         //se crea el stage de la pantalla dond evan a estar alojados todos los actores de la partida
-
-
-
-        /*createSuelo(0,0);
-        createSuelo(0,1);
-        createSuelo(0,2);
-        createSuelo(0,3);
-        createSuelo(0,4);
-        createSuelo(0,5);
-        createSuelo(0,6);
-        createSuelo(0,7);
-        createSuelo(0,8);
-        createSuelo(0,9);
-        createSuelo(0,10);
-        createSuelo(0,11);
-        createSuelo(0,12);
-        createSuelo(0,13);
-        createSuelo(0,14);
-        createSuelo(0,15);
-        createSuelo(0,16);
-        createSuelo(0,17);
-        createSuelo(0,18);
-        createSuelo(0,19);
-        createSuelo(0,20);
-        createSuelo(0,21);
-        createSuelo(0,22);
-        createSuelo(0,23);
-        createSuelo(0,24);
-        createSuelo(0,25);
-        createSuelo(0,26);
-        createSuelo(0,27);
-        createSuelo(0,28);
-        createSuelo(0,29);*/
         //createSuelo(0,2);
 
         actor=new MyActor(world);
@@ -176,20 +157,36 @@ public class MainGameScreen extends BaseScreen {
         renderer.setView(camera);
         renderer.render();
 
+        if (actor.getX() > 150 && actor.isAlive()) {
+            float speed = Constants.PLAYER_SPEED *delta* Constants.unitScale;
+            //System.out.println(speed);
+            stage.getCamera().translate(speed, 0, 0);
+            //camera.translate(0.01f, 0);
+        }
+
+
+
         stage.draw();
 
         debugRenderer.render(world, camera.combined);
     }
 
-    public void createBox(float x,float y,float witdh,float height){
+    public void createBox(float x, float y, float witdh, float height, boolean suelo, boolean bloque){
+
         bodyDef=new BodyDef();
         bodyDef.type= BodyDef.BodyType.StaticBody;
-        bodyDef.position.set(new Vector2((  unitTileToBox2d(x)+ (unitTileToBox2d(witdh)/2)    /*+ 0.5f*/), (  unitTileToBox2d(y) + (unitTileToBox2d(height)/2)  /*+ 0.5f*/)));
+        bodyDef.position.set(new Vector2((unitTileToBox2d(x) + (unitTileToBox2d(witdh) / 2)    /*+ 0.5f*/), (unitTileToBox2d(y) + (unitTileToBox2d(height) / 2)  /*+ 0.5f*/)));
         PolygonShape shape = new PolygonShape();
         shape.setAsBox(( unitTileToBox2d(witdh)/2 /*+ 0.5f*/), ( unitTileToBox2d(height)/2 /*+ 0.5f*/));
         body=world.createBody(bodyDef);
-        body.createFixture(shape, 1f);
+        body.createFixture(shape, 1f).setUserData("Objeto");
         body.resetMassData();
+        if(suelo){
+            body.setUserData("Objeto");
+        }else{
+            body.setUserData("Bloque");
+        }
+
         shape.dispose();
     }
 

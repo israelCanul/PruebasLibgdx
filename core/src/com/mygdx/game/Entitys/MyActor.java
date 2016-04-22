@@ -8,10 +8,12 @@ import com.badlogic.gdx.graphics.g2d.TextureRegion;
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.physics.box2d.Body;
 import com.badlogic.gdx.physics.box2d.BodyDef;
+import com.badlogic.gdx.physics.box2d.Fixture;
 import com.badlogic.gdx.physics.box2d.FixtureDef;
 import com.badlogic.gdx.physics.box2d.PolygonShape;
 import com.badlogic.gdx.physics.box2d.World;
 import com.badlogic.gdx.scenes.scene2d.Actor;
+import com.mygdx.game.Listeners.ContactListenerClass;
 
 import static com.mygdx.game.Constants.*;
 
@@ -24,14 +26,15 @@ public class MyActor extends Actor {
     private BodyDef bodyDef;
     private Body body;
     private FixtureDef defFixture;
+    private Fixture fixture;
     private boolean alive=true;
     private boolean jumping=false;
     private boolean mustJump=false;
     //detalles del player
     private float widthBox2d=1;//teniendo en cuenta que este valor es solo la mitad del ancho total
     private float heightBox2d=1.5f;
-    private float initXBox2d=1;
-    private float initYBox2d=12;
+    private float initXBox2d=6;
+    private float initYBox2d=5;
     private float density=0;
     private float friction=0;
     private float restitution=0.1f;
@@ -46,7 +49,7 @@ public class MyActor extends Actor {
     private Integer initAnimationState=WALK;
     protected Animation walkAnimation, idleAnimation, currentAnimation,downAnimation,jumpAnimation;
     private float time;
-
+    public boolean coliciono=false;
 
 
     public MyActor (World world) {
@@ -59,6 +62,7 @@ public class MyActor extends Actor {
 
         // se inicializan las animaciones del actor
         initAnimation();
+
     }
 
 
@@ -68,7 +72,9 @@ public class MyActor extends Actor {
 
     @Override
     public void draw (Batch batch, float parentAlpha) {
-        setPosition(convertir((body.getPosition().x - widthBox2d)),convertir((body.getPosition().y - heightBox2d)));
+        System.out.println(body.getPosition().x);
+        setPosition(convertir((body.getPosition().x - widthBox2d)), convertir((body.getPosition().y - heightBox2d)));
+        System.out.println(getX()+unitScale);
         batch.draw(currentFrame, getX(), getY(), getWidth(), getHeight());
     }
 
@@ -79,6 +85,7 @@ public class MyActor extends Actor {
 
     @Override
     public void act(float delta) {
+
         if (Gdx.input.justTouched()) {
             jump();
         }
@@ -98,6 +105,11 @@ public class MyActor extends Actor {
 
         if (jumping) {
             body.applyForceToCenter(0, 0 * 1.15f, true);
+            //System.out.println(body.getLinearVelocity().y);
+            //detectar que el salto ya llego a su punto mas alto para cambiar la posicion del player a caida
+            if(body.getLinearVelocity().y<0){
+                setStatus(DOWN);
+            }
         }
         time+= Gdx.graphics.getDeltaTime();
         currentFrame = currentAnimation.getKeyFrame(time, true);
@@ -106,7 +118,7 @@ public class MyActor extends Actor {
 
 
     public void detach(){
-
+        body.destroyFixture(fixture);
         world.destroyBody(body);
         textureAnimacionDown.dispose();
         textureAnimacionJump.dispose();
@@ -132,9 +144,12 @@ public class MyActor extends Actor {
         defFixture.density = density;  // Le pasamos la densidad
         defFixture.friction = friction;  // Le pasamos la friccion
         defFixture.restitution = restitution;  //Le agregamos la restitucion
+
         //se crea el fixture desde el cuerpo
-        body.createFixture(defFixture);
+        fixture=body.createFixture(defFixture);
+        fixture.setUserData("Player");
         body.resetMassData();
+
         //se libera la informacion del shape
         //formaCirculo.dispose();
         shape.dispose();
@@ -146,7 +161,8 @@ public class MyActor extends Actor {
             jumping=true;
             setStatus(JUMP);
             Vector2 position=body.getPosition();
-            body.applyLinearImpulse(0,IMPULSE_JUMP,position.x,position.y,true);
+            body.applyLinearImpulse(0, IMPULSE_JUMP, position.x, position.y, true);
+
         }
     }
 
@@ -219,6 +235,9 @@ public class MyActor extends Actor {
                     break;
                 case JUMP:
                     currentAnimation = jumpAnimation;
+                    break;
+                case DOWN:
+                    currentAnimation = downAnimation;
                     break;
                 default:
                     currentAnimation = idleAnimation;
