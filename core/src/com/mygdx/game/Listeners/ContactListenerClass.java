@@ -22,7 +22,7 @@ public class ContactListenerClass implements ContactListener {
     private boolean areCollided(Contact contact, Object userA, Object userB) {
         Object userDataA = contact.getFixtureA().getUserData();
         Object userDataB = contact.getFixtureB().getUserData();
-        System.out.print(userDataA);
+        //System.out.print(userDataA);
         // This is not in the video! It is a good idea to check that user data is not null.
         // Sometimes you forget to put user data or you get collisions by entities you didn't
         // expect. Not preventing this will probably result in a NullPointerException.
@@ -46,13 +46,11 @@ public class ContactListenerClass implements ContactListener {
             screen.actor.setJumping(false);
 
         }
-        /*if (areCollided(contact, "Player", "Bloque")) {
+        if (areCollided(contact, "Player", "Bloque")) {
             screen.actor.setStatus(DOWN);
             screen.actor.setJumping(false);
             screen.actor.coliciono=true;
-        }else{
-            screen.actor.coliciono=false;
-        }*/
+        }
         // The player has collided with something that hurts.
         if (areCollided(contact, "player", "spike")) {
 
@@ -66,8 +64,14 @@ public class ContactListenerClass implements ContactListener {
     @Override
     public void endContact(Contact contact) {
         // The player is jumping and it is not touching the floor.
-        if (areCollided(contact, "player", "floor")) {
-
+        if (areCollided(contact, "Player", "Objeto")) {
+            screen.actor.setStatus(JUMP);
+            screen.actor.setJumping(true);
+        }
+        if (areCollided(contact, "Player", "Bloque")) {
+            screen.actor.setStatus(DOWN);
+            screen.actor.setJumping(false);
+            screen.actor.coliciono=false;
         }
     }
 

@@ -5,6 +5,7 @@ import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.Animation;
 import com.badlogic.gdx.graphics.g2d.Batch;
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
+import com.badlogic.gdx.input.GestureDetector;
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.physics.box2d.Body;
 import com.badlogic.gdx.physics.box2d.BodyDef;
@@ -13,6 +14,10 @@ import com.badlogic.gdx.physics.box2d.FixtureDef;
 import com.badlogic.gdx.physics.box2d.PolygonShape;
 import com.badlogic.gdx.physics.box2d.World;
 import com.badlogic.gdx.scenes.scene2d.Actor;
+import com.badlogic.gdx.scenes.scene2d.InputEvent;
+import com.badlogic.gdx.scenes.scene2d.Touchable;
+import com.badlogic.gdx.scenes.scene2d.actions.MoveToAction;
+import com.badlogic.gdx.scenes.scene2d.utils.ActorGestureListener;
 import com.mygdx.game.Listeners.ContactListenerClass;
 
 import static com.mygdx.game.Constants.*;
@@ -20,7 +25,7 @@ import static com.mygdx.game.Constants.*;
 /**
  * Created by icanul on 4/5/16.
  */
-public class MyActor extends Actor {
+public class MyActor extends Actor  {
     private final World world;
     Texture region;
     private BodyDef bodyDef;
@@ -35,10 +40,9 @@ public class MyActor extends Actor {
     private float heightBox2d=1.5f;
     private float initXBox2d=6;
     private float initYBox2d=5;
-    private float density=0;
+    private float density=0f;
     private float friction=0;
-    private float restitution=0.1f;
-
+    private float restitution=0f;
     //informacion para animacion
     protected Texture textureAnimacionWalk;
     protected Texture textureAnimacionDown,textureAnimacionJump;
@@ -52,6 +56,10 @@ public class MyActor extends Actor {
     public boolean coliciono=false;
 
 
+
+
+
+
     public MyActor (World world) {
         this.world=world;
         //se llama a la funcio n para genera el actor y su cuerpo en box2d
@@ -59,22 +67,15 @@ public class MyActor extends Actor {
         //se definen sus tamaños de acuerdo a las variables globales
         setWidth(unitScale * 2);
         setHeight(unitScale * 3);
-
         // se inicializan las animaciones del actor
         initAnimation();
 
+
     }
 
-
-
-
-
-
-    @Override
+   @Override
     public void draw (Batch batch, float parentAlpha) {
-        System.out.println(body.getPosition().x);
         setPosition(convertir((body.getPosition().x - widthBox2d)), convertir((body.getPosition().y - heightBox2d)));
-        System.out.println(getX()+unitScale);
         batch.draw(currentFrame, getX(), getY(), getWidth(), getHeight());
     }
 
@@ -86,7 +87,7 @@ public class MyActor extends Actor {
     @Override
     public void act(float delta) {
 
-        if (Gdx.input.justTouched()) {
+        if (Gdx.input.justTouched() && !jumping) {
             jump();
         }
         // Jump if we were required to jump during a collision.
@@ -94,7 +95,6 @@ public class MyActor extends Actor {
             mustJump = false;
             jump();
         }
-
         if (alive) {
             // Only change X speed. Do not change Y speed because if the player is jumping,
             // this speed has to be managed by the forces applied to the player. If we modify
@@ -102,28 +102,26 @@ public class MyActor extends Actor {
             float speedY = body.getLinearVelocity().y;
             body.setLinearVelocity(PLAYER_SPEED, speedY);
         }
-
         if (jumping) {
-            body.applyForceToCenter(0, 0 * 1.15f, true);
-            //System.out.println(body.getLinearVelocity().y);
+
+            body.applyForceToCenter(0, -IMPULSE_JUMP * 1.15f, true);
             //detectar que el salto ya llego a su punto mas alto para cambiar la posicion del player a caida
             if(body.getLinearVelocity().y<0){
                 setStatus(DOWN);
             }
         }
+
         time+= Gdx.graphics.getDeltaTime();
         currentFrame = currentAnimation.getKeyFrame(time, true);
     }
 
 
-
     public void detach(){
         body.destroyFixture(fixture);
-        world.destroyBody(body);
         textureAnimacionDown.dispose();
         textureAnimacionJump.dispose();
         textureAnimacionWalk.dispose();
-
+        world.destroyBody(body);
     }
 
     public void createBodyBox2d(){
@@ -141,7 +139,7 @@ public class MyActor extends Actor {
         //
         defFixture = new FixtureDef();  // Definimos el fixture
         defFixture.shape = shape;  // Le pasasamos la forma
-        defFixture.density = density;  // Le pasamos la densidad
+       defFixture.density = density;  // Le pasamos la densidad
         defFixture.friction = friction;  // Le pasamos la friccion
         defFixture.restitution = restitution;  //Le agregamos la restitucion
 
@@ -150,8 +148,6 @@ public class MyActor extends Actor {
         fixture.setUserData("Player");
         body.resetMassData();
 
-        //se libera la informacion del shape
-        //formaCirculo.dispose();
         shape.dispose();
 
     }
@@ -166,6 +162,11 @@ public class MyActor extends Actor {
         }
     }
 
+    @Override
+    public Actor hit(float x, float y, boolean touchable) {
+        if (touchable && getTouchable() != Touchable.enabled) return null;
+        return x >= 0 && x < getWidth() && y >= 0 && y < getHeight() ? this : null;
+    }
 
     // Getter and setter festival below here.
     public boolean isAlive() {
@@ -245,7 +246,6 @@ public class MyActor extends Actor {
             }
         }
     }
-
 
 
 }

@@ -5,8 +5,8 @@ package com.mygdx.game;
  */
 public class Constants {
     public static float unitScale=16;
-    public static final float PLAYER_SPEED = 2f;
-    public static final int IMPULSE_JUMP = 8;
+    public static final float PLAYER_SPEED = 4f;
+    public static final int IMPULSE_JUMP = 15;
     public static final int WIDTH_TILE_MAP = 800;
     public static final int HEIGTH_TILE_MAP = 480;
     public static final int FRAME_COLS=4;
