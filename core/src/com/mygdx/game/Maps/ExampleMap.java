@@ -25,6 +25,8 @@ public class ExampleMap {
     public final TiledMap map;
    public final TiledMapTileLayer fondolayer;
     public final TiledMapTileLayer objetoslayer;
+    public final TiledMapTileLayer fondo_atr_1_layer;
+    public final TiledMapTileLayer fondo_ade_1_layer;
     private MainGameScreen mainGameScreen;
     private MapObjects objects;
     private Body body;
@@ -33,8 +35,11 @@ public class ExampleMap {
     public ExampleMap(MainGameScreen mainGameScreen){
         this.mainGameScreen=mainGameScreen;
         map = new TmxMapLoader().load("mimundo.tmx");
-        fondolayer = (TiledMapTileLayer)map.getLayers().get("fondo");
+        fondo_atr_1_layer= (TiledMapTileLayer)map.getLayers().get("fondo_atras_1");
+        fondolayer= (TiledMapTileLayer)map.getLayers().get("fondo");
+        fondo_ade_1_layer = (TiledMapTileLayer)map.getLayers().get("fondo_adelante_1");
         objetoslayer = (TiledMapTileLayer)map.getLayers().get("objetos");
+
         objects = map.getLayers().get("colicion").getObjects();
     }
 

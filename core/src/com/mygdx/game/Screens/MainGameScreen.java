@@ -4,6 +4,9 @@ import com.badlogic.gdx.Game;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.graphics.GL20;
 import com.badlogic.gdx.graphics.OrthographicCamera;
+import com.badlogic.gdx.graphics.Texture;
+import com.badlogic.gdx.graphics.g2d.Sprite;
+import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.maps.MapObject;
 import com.badlogic.gdx.maps.MapObjects;
 import com.badlogic.gdx.maps.objects.RectangleMapObject;
@@ -57,6 +60,9 @@ public class MainGameScreen extends BaseScreen {
 
 
     private TiledMapTileLayer suelo;
+    private Texture texture;
+    private Sprite sprite;
+    private SpriteBatch batch;
 
     public MainGameScreen(Game game) {
         super(game);
@@ -83,8 +89,11 @@ public class MainGameScreen extends BaseScreen {
         actor=new MyActor(world);
         stage.addActor(actor);
         renderer.getBatch();
+        batch = new SpriteBatch();
         renderer.setView(camera);
-
+        texture = new Texture("background.png");
+        sprite = new Sprite(texture);
+        sprite.setSize(800,480);
 
     }
 
@@ -98,13 +107,15 @@ public class MainGameScreen extends BaseScreen {
 
     @Override
     public void render(float delta) {
-        Gdx.gl20.glClearColor(0, 0, 0.5f, 1);
+        //Gdx.gl20.glClearColor(0, 0, 0.5f, 1);
         Gdx.gl20.glClear(GL20.GL_COLOR_BUFFER_BIT);
         stage.act();
         world.step(1 / 60f, 6, 2);
 
         camera.update();
-
+        batch.begin();
+        sprite.draw(batch);
+        batch.end();
 
 
 
@@ -117,6 +128,7 @@ public class MainGameScreen extends BaseScreen {
         }
         renderer.setView(camera);
         renderer.getBatch().begin();
+        renderer.renderTileLayer(mapa.fondo_atr_1_layer);
         renderer.renderTileLayer(mapa.fondolayer);
         renderer.getBatch().end();
 
@@ -124,7 +136,7 @@ public class MainGameScreen extends BaseScreen {
 
 
         renderer.getBatch().begin();
-        renderer.renderTileLayer(mapa.objetoslayer);
+        renderer.renderTileLayer(mapa.fondo_ade_1_layer);
         renderer.getBatch().end();
         // debugRenderer.render(world, camera.combined);
     }
