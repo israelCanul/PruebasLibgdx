@@ -93,7 +93,7 @@ public class MainGameScreen extends BaseScreen {
         renderer.setView(camera);
         texture = new Texture("background.png");
         sprite = new Sprite(texture);
-        sprite.setSize(800,480);
+        sprite.setSize(Gdx.graphics.getWidth(),Gdx.graphics.getHeight());
 
     }
 
