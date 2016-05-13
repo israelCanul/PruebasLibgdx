@@ -14,6 +14,9 @@ import com.badlogic.gdx.physics.box2d.BodyDef;
 import com.badlogic.gdx.physics.box2d.PolygonShape;
 import com.badlogic.gdx.physics.box2d.Shape;
 import com.mygdx.game.Screens.MainGameScreen;
+import com.mygdx.game.terrains.Block;
+
+import java.util.ArrayList;
 
 import static com.mygdx.game.Constants.unitScale;
 
@@ -27,6 +30,8 @@ public class ExampleMap {
     public final TiledMapTileLayer objetoslayer;
     public final TiledMapTileLayer fondo_atr_1_layer;
     public final TiledMapTileLayer fondo_ade_1_layer;
+    public ArrayList<Block> listaBlockes;
+
     private MainGameScreen mainGameScreen;
     private MapObjects objects;
     private Body body;
@@ -45,6 +50,7 @@ public class ExampleMap {
 
 
     public void initMapObjects(){
+        listaBlockes=new ArrayList<Block>();
 
         for (MapObject object:objects) {
             if (object instanceof TextureMapObject) {
@@ -56,52 +62,13 @@ public class ExampleMap {
             boolean suelo = Boolean.valueOf(temp.getProperties().get("suelo").toString());
             boolean bloque = Boolean.valueOf(temp.getProperties().get("bloque").toString());
 
-            if (object instanceof RectangleMapObject) {
-                RectangleMapObject rectangulo = (RectangleMapObject)object;
+            listaBlockes.add(new Block(body,temp));
 
-
-                getRectangle(rectangulo,suelo,bloque);
-                //System.out.println(suelo);
-
-                //System.out.println(rectangulo.getRectangle().getHeight());*/
-            }
         }
     }
 
 
-    private void getRectangle(RectangleMapObject rectangleObject, boolean suelo, boolean bloque) {
-        Rectangle rectangle = rectangleObject.getRectangle();
-        createBox(rectangle.x, rectangle.y, rectangle.width, rectangle.height, suelo, bloque);
-    }
 
-
-    public void createBox(float x, float y, float witdh, float height, boolean suelo, boolean bloque){
-
-        BodyDef bodyDef = new BodyDef();
-        bodyDef.type= BodyDef.BodyType.StaticBody;
-        bodyDef.position.set(new Vector2((unitTileToBox2d(x) + (unitTileToBox2d(witdh) / 2)    /*+ 0.5f*/), (unitTileToBox2d(y) + (unitTileToBox2d(height) / 2)  /*+ 0.5f*/)));
-        PolygonShape shape = new PolygonShape();
-        shape.setAsBox(( unitTileToBox2d(witdh)/2 ), ( unitTileToBox2d(height)/2 ));
-        body=MainGameScreen.world.createBody(bodyDef);
-        body.createFixture(shape, 1f).setUserData("Objeto");
-        body.resetMassData();
-        if(suelo){
-            body.setUserData("Objeto");
-        }else{
-            body.setUserData("Bloque");
-        }
-
-        shape.dispose();
-    }
-
-
-    private float unitTileToBox2d(float from){
-        float to=0;
-        to=from/unitScale;
-        //System.out.println(to);
-
-        return to;
-    }
 
 
     public void detach(){
